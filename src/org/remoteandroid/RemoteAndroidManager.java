@@ -56,6 +56,12 @@ public abstract class RemoteAndroidManager
 	 * @since 1.0
 	 */
     public static final String ACTION_REMOTE_ANDROID="org.remoteandroid.service.RemoteAndroid";
+    
+    /** Intent action to connect to another remote android.
+     * @since 1.0
+     */
+    public static final String ACTION_CONNECT_ANDROID="org.remoteandroid.action.Connect";
+    
     /** Extra in intent to get the URL of the remote android. 
 	 * @since 1.0
 	 */
