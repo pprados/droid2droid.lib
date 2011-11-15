@@ -62,6 +62,11 @@ public abstract class RemoteAndroidManager
      */
     public static final String ACTION_CONNECT_ANDROID="org.remoteandroid.action.Connect";
     
+    /** Boolean extra for accept anonymous connection when use the startActivityForResult() with ACTION_CONNECT_ANDROID 
+	 * @since 1.0
+	 */
+    public static final String EXTRA_ACCEPT_ANONYMOUS="anonymous";
+    
     /** Extra in intent to get the URL of the remote android. 
 	 * @since 1.0
 	 */
