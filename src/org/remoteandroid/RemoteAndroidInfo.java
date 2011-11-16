@@ -38,12 +38,6 @@ public interface RemoteAndroidInfo extends Parcelable
 	/** Is the remote device not bonded and not discovered ? */
 	public boolean isRemovable();
 	
-	/** The bluetooth mac address. May be null if the device is not discover via BT. */
-	public String getBluetoothId();
-	/** The remote internet addresses. May be empty if the device is not discover via internet. */
-	public InetAddress[] getInetAddresses();
-	/** The ethernet mac address. May be null if the device is not discover at proximity. */
-	public String getEthernetMac();
 
 	/**
 	 * Merge two android info if used the same UUID.
@@ -65,7 +59,7 @@ public interface RemoteAndroidInfo extends Parcelable
 	 * 
 	 * @param uri The uri to remove.
 	 */
-	public void remoteUri(String uri); //TODO: remove or remote ?
+	public void removeUri(String uri); //TODO: remove or remote ?
 	
 	/**
 	 * {@inheritDoc}
