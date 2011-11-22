@@ -306,7 +306,6 @@ public abstract class RemoteAndroidManager
 						lock.wait();
 		    			sSingleton=(RemoteAndroidManager)sClassLoader.loadClass(BOOTSTRAP_CLASS)
 	    					.getConstructor(Context.class).newInstance(context);
-						Log.d("test","OK");
 					}
 					catch (Exception e)
 					{
