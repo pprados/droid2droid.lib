@@ -14,10 +14,24 @@ import android.os.Parcelable;
  */
 public interface RemoteAndroidInfo extends Parcelable
 {
-	public static final int CAPABILITY_SCREEN	=1<<1;
-	public static final int CAPABILITY_KEYBOARD	=1<<2;
-	public static final int CAPABILITY_CAMERA	=1<<3;
-	public static final int CAPABILITY_SMS		=1<<4;
+	/** If the remote device have a screen. */
+	public static final int FEATURE_SCREEN		=1<<0;
+	/** If the remote device have a HP. */
+	public static final int FEATURE_HP			=1<<1;
+	/** If the remote device have a microphone. */
+	public static final int FEATURE_MICROPHONE	=1<<2;
+	/** If the remote device have bluetooth. */
+	public static final int FEATURE_BT			=1<<3;
+	/** If the remote device have a camera. */
+	public static final int FEATURE_CAMERA		=1<<4;
+	/** If the remote device have NFC. */
+	public static final int FEATURE_NFC			=1<<5;
+	/** If the remote device have telephony. */
+	public static final int FEATURE_TELEPHONY	=1<<6;
+	/** If the remote device have Wifi. */
+	public static final int FEATURE_WIFI		=1<<7;
+	/** If the remote device have network. */
+	public static final int FEATURE_NET			=1<<8;
 	
 	/** The unique id of the device. */
 	public UUID getUuid();
@@ -30,7 +44,7 @@ public interface RemoteAndroidInfo extends Parcelable
 	/** The operating system. Must be "android" now. */
 	public String getOs();
 	/** The remote capability for pairing process. */
-	public int getCapability();
+	public int getFeature();
 	/** Is the remote device paired with this device ? */
 	public boolean isBonded();
 	/** Is the remote device discovered ? */
