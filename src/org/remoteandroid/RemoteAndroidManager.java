@@ -2,6 +2,7 @@ package org.remoteandroid;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.List;
 
@@ -272,6 +273,7 @@ public abstract class RemoteAndroidManager
 	 */
     public static synchronized RemoteAndroidManager getManager(final Context context)
     {
+    	RemoteAndroidManager manager=sSingleton;
     	if (sSingleton==null)
     	{
     		// Use the library present in the Remote Android package.
@@ -304,8 +306,12 @@ public abstract class RemoteAndroidManager
         			try
 					{
 						lock.wait();
-		    			sSingleton=(RemoteAndroidManager)sClassLoader.loadClass(BOOTSTRAP_CLASS)
+						manager=(RemoteAndroidManager)sClassLoader.loadClass(BOOTSTRAP_CLASS)
 	    					.getConstructor(Context.class).newInstance(context);
+						if (USE_STATIC_SINGLETON)
+						{
+							sSingleton=manager;
+						}
 					}
 					catch (Exception e)
 					{
@@ -320,8 +326,12 @@ public abstract class RemoteAndroidManager
     		{
     			try
 				{
-					sSingleton=(RemoteAndroidManager)RemoteAndroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS)
+    				manager=(RemoteAndroidManager)RemoteAndroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS)
 						.getConstructor(Context.class).newInstance(context);
+					if (USE_STATIC_SINGLETON)
+					{
+						sSingleton=manager;
+					}
 				}
 				catch (Exception e)
 				{
@@ -329,7 +339,7 @@ public abstract class RemoteAndroidManager
 				}
     		}
     	}
-    	return sSingleton;
+    	return manager;
     }
 
     private static ClassLoader getClassLoaderSingleton(final Context context) throws Error
@@ -340,7 +350,17 @@ public abstract class RemoteAndroidManager
 			File dir=context.getApplicationContext().getDir("dexopt", Context.MODE_PRIVATE); 
 			final String packageName="org.remoteandroid";
 			PackageInfo info=context.getPackageManager().getPackageInfo(packageName, 0/*PackageManager.GET_CONFIGURATIONS*/);
-			String jar=info.applicationInfo.dataDir+"/files/"+SHARED_LIB; 
+			String jar=info.applicationInfo.dataDir+"/files/"+SHARED_LIB+".jar";
+			// TODO: gerer les versions
+//			new File(info.applicationInfo.dataDir+"/files/").list(new FilenameFilter()
+//			{
+//				
+//				@Override
+//				public boolean accept(File dir, String filename)
+//				{
+//					return filename.startsWith(SHARED_LIB);
+//				}
+//			});
 			InputStream in=new FileInputStream(jar); in.read(); in.close(); // Check if is readable
 			classLoader=
 				new DexClassLoader(jar,
@@ -357,7 +377,8 @@ public abstract class RemoteAndroidManager
     
     /** Bootstrap implementation. */
     private static final String BOOTSTRAP_CLASS="org.remoteandroid.internal.RemoteAndroidManagerImpl";
-	/*package*/ static final boolean USE_SHAREDLIB=false;
-	/*package*/static final String SHARED_LIB="sharedlib.jar";
+	private static final boolean USE_STATIC_SINGLETON=false; // FIXME: leak remote instance ? See http://stackoverflow.com/questions/4497051/android-service-connection-leaked-after-starting-new-activity
+	/*package*/ static final boolean USE_SHAREDLIB=true;
+	/*package*/static final String SHARED_LIB="sharedlib";
 
 }
