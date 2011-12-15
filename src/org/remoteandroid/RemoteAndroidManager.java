@@ -351,16 +351,6 @@ public abstract class RemoteAndroidManager
 			final String packageName="org.remoteandroid";
 			PackageInfo info=context.getPackageManager().getPackageInfo(packageName, 0/*PackageManager.GET_CONFIGURATIONS*/);
 			String jar=info.applicationInfo.dataDir+"/files/"+SHARED_LIB+".jar";
-			// TODO: gerer les versions
-//			new File(info.applicationInfo.dataDir+"/files/").list(new FilenameFilter()
-//			{
-//				
-//				@Override
-//				public boolean accept(File dir, String filename)
-//				{
-//					return filename.startsWith(SHARED_LIB);
-//				}
-//			});
 			InputStream in=new FileInputStream(jar); in.read(); in.close(); // Check if is readable
 			classLoader=
 				new DexClassLoader(jar,
@@ -378,7 +368,7 @@ public abstract class RemoteAndroidManager
     /** Bootstrap implementation. */
     private static final String BOOTSTRAP_CLASS="org.remoteandroid.internal.RemoteAndroidManagerImpl";
 	private static final boolean USE_STATIC_SINGLETON=false; // FIXME: leak remote instance ? See http://stackoverflow.com/questions/4497051/android-service-connection-leaked-after-starting-new-activity
-	/*package*/ static final boolean USE_SHAREDLIB=true;
+	/*package*/ static final boolean USE_SHAREDLIB=false;
 	/*package*/static final String SHARED_LIB="sharedlib";
 
 }
