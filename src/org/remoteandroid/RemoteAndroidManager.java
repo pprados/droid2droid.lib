@@ -1,5 +1,6 @@
 package org.remoteandroid;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -27,7 +28,7 @@ import dalvik.system.DexClassLoader;
  * @author Philippe PRADOS
  *
  */
-public abstract class RemoteAndroidManager 
+public abstract class RemoteAndroidManager  implements Closeable
 {
 	/** The network socket default port. 
 	 * @since 1.0
