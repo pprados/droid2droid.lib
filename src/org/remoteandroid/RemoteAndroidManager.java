@@ -28,7 +28,7 @@ import dalvik.system.DexClassLoader;
  * @author Philippe PRADOS
  *
  */
-public abstract class RemoteAndroidManager  implements Closeable
+public abstract class RemoteAndroidManager
 {
 	/** The network socket default port. 
 	 * @since 1.0
@@ -247,7 +247,7 @@ public abstract class RemoteAndroidManager  implements Closeable
     public static final int FLAG_LOG_ERROR=1<<0;
     /** Flag for set/unset warn log. */
     @Deprecated
-    public static final int FLAG_LOG_WARN=1<<1;
+    public static final int FLAG_LOG_WARN=1<<1;// Current application info
     /** Flag for set/unset info log. */
     @Deprecated
     public static final int FLAG_LOG_INFO=1<<2;
@@ -261,7 +261,7 @@ public abstract class RemoteAndroidManager  implements Closeable
     @Deprecated
     public static final int FLAG_LOG_ALL=FLAG_LOG_ERROR|FLAG_LOG_WARN|FLAG_LOG_INFO|FLAG_LOG_DEBUG|FLAG_LOG_VERBOSE;
     
-    // Current application info
+    public abstract void close();
 
 	/**
 	 * Return a manager. May be called in {@link android.app.Application}.

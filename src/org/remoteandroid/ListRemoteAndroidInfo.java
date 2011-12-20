@@ -17,7 +17,7 @@ import java.util.List;
  * @author Philippe Prados
  *
  */
-public interface ListRemoteAndroidInfo extends List<RemoteAndroidInfo>, Closeable
+public interface ListRemoteAndroidInfo extends List<RemoteAndroidInfo>
 {
 	/**
 	 * A call back interface to signal a new device is detected.
@@ -93,4 +93,11 @@ public interface ListRemoteAndroidInfo extends List<RemoteAndroidInfo>, Closeabl
 	 * @since 1.0
 	 */
 	public void cancel();
+	
+	/**
+	 * close the liste.
+	 * 
+	 * @since 1.0
+	 */
+	public void close();
 }
