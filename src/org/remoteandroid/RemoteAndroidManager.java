@@ -16,6 +16,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.os.Looper;
 import android.util.Log;
 import dalvik.system.DexClassLoader;
 
@@ -274,6 +275,10 @@ public abstract class RemoteAndroidManager
 	 */
     public static synchronized RemoteAndroidManager getManager(final Context context)
     {
+    	if (Looper.getMainLooper().getThread() == Thread.currentThread()) 
+    	{
+    		  Log.e("RemoteAndroid","Invoke getManager() in UI thread !"); ///TODO
+    	} 
     	RemoteAndroidManager manager=sSingleton;
     	if (sSingleton==null)
     	{
