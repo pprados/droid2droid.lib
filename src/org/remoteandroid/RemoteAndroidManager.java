@@ -58,7 +58,7 @@ public abstract class RemoteAndroidManager
     /** Intent action when a remote android is discover. 
 	 * @since 1.0
 	 */
-    public static final String ACTION_REMOTE_ANDROID="org.remoteandroid.service.RemoteAndroid";
+    public static final String ACTION_BIND_REMOTE_ANDROID="org.remoteandroid.service.RemoteAndroidBinder";
     
     /** Intent action to connect to another remote android.
      * @since 1.0
