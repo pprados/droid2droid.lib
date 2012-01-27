@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.remoteandroid.ListRemoteAndroidInfo.DiscoverListener;
@@ -23,14 +24,40 @@ import dalvik.system.DexClassLoader;
 
 /**
  * The startup class to use Remote android.
+ * This is an asynchronous framework.
  * This class manage all remotes devices.
- * The classical usage it to get an instance, discover remote android, and bind to it.
+ * The classical usage is:
+ * - bind to a RemoteAndroidManager
+ * - discover remote androids
+ * - bind to a RemoteAndroid
+ * - bind to a remote instance
+ * - invoke aidl methods
  *  
  * @author Philippe PRADOS
  *
  */
-public abstract class RemoteAndroidManager
+public abstract class RemoteAndroidManager implements Closeable
 {
+	/**
+	 * Listener to manage the life cycle of remote android manager.
+	 * @since 1.0
+	 */
+	public interface ManagerListener
+	{
+		/**
+		 * Remote android manager was binded.
+		 * @param manager The manager.
+		 * @since 1.0
+		 */
+		void bind(RemoteAndroidManager manager);
+		/**
+		 * Remote android manager was disconnected.
+		 * @param manager The manager.
+		 * @since 1.0
+		 */
+		void unbind(RemoteAndroidManager manager);
+	}
+	
 	/** The network socket default port. 
 	 * @since 1.0
 	 */
@@ -39,7 +66,6 @@ public abstract class RemoteAndroidManager
 	/** The bootstrap instance. 
 	 * @since 1.0
 	 */
-	private static RemoteAndroidManager sSingleton;
     private static ClassLoader sClassLoader;
 
 
@@ -262,90 +288,75 @@ public abstract class RemoteAndroidManager
     @Deprecated
     public static final int FLAG_LOG_ALL=FLAG_LOG_ERROR|FLAG_LOG_WARN|FLAG_LOG_INFO|FLAG_LOG_DEBUG|FLAG_LOG_VERBOSE;
     
-    public abstract void close();
-
-	/**
-	 * Return a manager. May be called in {@link android.app.Application}.
-	 * 
-	 * @param context The application context.
-	 * 
-	 * @return An instance to use for bind to remote devices.
+    /**
+     * Close the manager.
      * 
 	 * @since 1.0
-	 */
-    public static synchronized RemoteAndroidManager getManager(final Context context)
+     */
+    public abstract void close();
+
+    /**
+     * Bind to a RemoteAndroidManager.
+     * 
+     * @param context The context.
+     * @param listener The listener.
+     * 
+	 * @since 1.0
+     */
+    public static void bindManager(final Context context,final ManagerListener listener)
     {
-    	if (Looper.getMainLooper().getThread() == Thread.currentThread()) 
-    	{
-    		  Log.e("RemoteAndroid","Invoke getManager() in UI thread !"); ///TODO
-    	} 
-    	RemoteAndroidManager manager=sSingleton;
-    	if (sSingleton==null)
-    	{
-    		// Use the library present in the Remote Android package.
-    		// With this approach, it's possible to update the package and all the caller apk.
-    		if (USE_SHAREDLIB)
-    		{
-    			// Strict mode
-    			final Object lock=new Object();
-    			synchronized (lock)
+		// Use the library present in the Remote Android package.
+		// With this approach, it's possible to update the package and all the caller apk.
+		if (USE_SHAREDLIB) // FIXME: Must be validated with Parcelable objet
+		{
+			// Strict mode
+			final Object lock=new Object();
+			synchronized (lock)
+			{
+				new Thread()
 				{
-    				new Thread()
-    				{
-    					@Override
-    					public void run() 
-    					{
-    						try
-    						{
-    							sClassLoader=getClassLoaderSingleton(context);
-	    		    			synchronized (lock)
-								{
-	        						lock.notify();
-								}
-    						}
-    						catch (Exception e)
-    						{
-    							throw new Error("Install the Remote Android package",e);
-    						}
-    					}
-    				}.start();
-        			try
+					@Override
+					public void run() 
 					{
-						lock.wait();
-						manager=(RemoteAndroidManager)sClassLoader.loadClass(BOOTSTRAP_CLASS)
-	    					.getConstructor(Context.class).newInstance(context);
-						if (USE_STATIC_SINGLETON)
+						try
 						{
-							sSingleton=manager;
+							sClassLoader=getClassLoaderSingleton(context);
+    		    			synchronized (lock)
+							{
+        						lock.notify();
+							}
+						}
+						catch (Exception e)
+						{
+							throw new Error("Install the Remote Android package",e);
 						}
 					}
-					catch (Exception e)
-					{
-						throw new Error("Install the Remote Android package",e);
-					}
-				}
-//    			sSingleton=(RemoteAndroidManager)getClassLoaderInit().loadClass(BOOTSTRAP_CLASS)
-//    				.getConstructor(Context.class).newInstance(context);
-
-    		}
-    		else
-    		{
+				}.start();
     			try
 				{
-    				manager=(RemoteAndroidManager)RemoteAndroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS)
-						.getConstructor(Context.class).newInstance(context);
-					if (USE_STATIC_SINGLETON)
-					{
-						sSingleton=manager;
-					}
+					lock.wait();
+					RemoteAndroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS)
+							.getMethod(BOOTSTRAP_METHOD, Context.class,RemoteAndroidManager.ManagerListener.class).invoke(null, context,listener);
+					
 				}
 				catch (Exception e)
 				{
-					throw new Error("Internal error",e);
+					throw new Error("Install the Remote Android package",e);
 				}
-    		}
-    	}
-    	return manager;
+			}
+		}
+		else
+		{
+			try
+			{
+				RemoteAndroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS)
+						.getMethod("bootStrap", Context.class,RemoteAndroidManager.ManagerListener.class).invoke(null, context,listener);
+			}
+			catch (Exception e)
+			{
+				throw new Error("Internal error",e);
+			}
+		}
     }
 
     private static ClassLoader getClassLoaderSingleton(final Context context) throws Error
@@ -373,7 +384,7 @@ public abstract class RemoteAndroidManager
     
     /** Bootstrap implementation. */
     private static final String BOOTSTRAP_CLASS="org.remoteandroid.internal.RemoteAndroidManagerImpl";
-	private static final boolean USE_STATIC_SINGLETON=false; // FIXME: leak remote instance ? See http://stackoverflow.com/questions/4497051/android-service-connection-leaked-after-starting-new-activity
+    private static final String BOOTSTRAP_METHOD="bootStrap";
 	/*package*/ static final boolean USE_SHAREDLIB=false;
 	/*package*/static final String SHARED_LIB="sharedlib";
 
