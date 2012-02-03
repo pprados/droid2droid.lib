@@ -15,23 +15,32 @@ import android.os.Parcelable;
 public interface RemoteAndroidInfo extends Parcelable
 {
 	/** If the remote device have a screen. */
-	public static final int FEATURE_SCREEN		=1<<0;
+	public static final long FEATURE_SCREEN		=1<<0;
 	/** If the remote device have a HP. */
-	public static final int FEATURE_HP			=1<<1;
+	public static final long FEATURE_HP			=1<<1;
 	/** If the remote device have a microphone. */
-	public static final int FEATURE_MICROPHONE	=1<<2;
+	public static final long FEATURE_MICROPHONE	=1<<2;
 	/** If the remote device have bluetooth. */
-	public static final int FEATURE_BT			=1<<3;
+	public static final long FEATURE_BT			=1<<3;
 	/** If the remote device have a camera. */
-	public static final int FEATURE_CAMERA		=1<<4;
+	public static final long FEATURE_CAMERA		=1<<4;
 	/** If the remote device have NFC. */
-	public static final int FEATURE_NFC			=1<<5;
+	public static final long FEATURE_NFC			=1<<5;
 	/** If the remote device have telephony. */
-	public static final int FEATURE_TELEPHONY	=1<<6;
+	public static final long FEATURE_TELEPHONY	=1<<6;
 	/** If the remote device have Wifi. */
-	public static final int FEATURE_WIFI		=1<<7;
+	public static final long FEATURE_WIFI		=1<<7;
+	/** If the remote device have Wifi. */
+	public static final long FEATURE_WIFI_DIRECT	=1<<8;
 	/** If the remote device have network. */
-	public static final int FEATURE_NET			=1<<8;
+	public static final long FEATURE_NET			=1<<9;
+	/** If location.*/
+	public static final long FEATURE_LOCATION    =1<<10;
+	/** If location.*/
+	public static final long FEATURE_BLUETOOTH	=1<<11;
+	/** If location.*/
+	public static final long FEATURE_ACCELEROMETER=1<<12;
+	
 	
 	/** The unique id of the device. */
 	public UUID getUuid();
@@ -44,7 +53,7 @@ public interface RemoteAndroidInfo extends Parcelable
 	/** The operating system. Must be "android" now. */
 	public String getOs();
 	/** The remote capability for pairing process. */
-	public int getFeature();
+	public long getFeature();
 	/** Is the remote device paired with this device ? */
 	public boolean isBonded();
 	/** Is the remote device discovered ? */
