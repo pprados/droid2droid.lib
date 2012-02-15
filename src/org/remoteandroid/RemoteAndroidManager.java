@@ -16,6 +16,8 @@ import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Looper;
 import android.util.Log;
@@ -146,6 +148,24 @@ public abstract class RemoteAndroidManager implements Closeable
 	 */
     public static final int FLAG_NO_ETHERNET		=1 << 2;
     
+
+    /**
+     * Uri to create a bitmap with QRcode.
+     * <pre>
+     * InputStream in=getContentResolver()
+	 *  .openTypedAssetFileDescriptor(RemoteAndroidManager.QRCODE_URI, "image/png", null)
+	 *  .createInputStream();
+	 *  Bitmap bitmap=BitmapFactory.decodeStream(in);
+	 * in.close();
+	 * </pre>
+     * @since 1.0
+     */
+	public static final Uri QRCODE_URI=Uri.parse("content://org.remoteandroid/qrcode");
+    /**
+     * Mime type for QRCODE_URI.
+     * @since 1.0
+     */
+	public static final String QRCODE_MIME_TYPE="image/png";
     /**
      * Return the version of this library.
      * 
