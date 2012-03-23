@@ -79,11 +79,19 @@ public abstract class RemoteAndroidManager implements Closeable
 	 * @since 1.0
 	 */
     public static final String PERMISSION_DISCOVER_RECEIVE="org.remoteandroid.permission.discover.RECEIVE";
+    /** Intent action when start remote android service. 
+	 * @since 1.0
+	 */
+    public static final String ACTION_START_REMOTE_ANDROID="org.remoteandroid.START";
+    /** Intent action when start remote android service. 
+	 * @since 1.0
+	 */
+    public static final String ACTION_STOP_REMOTE_ANDROID="org.remoteandroid.STOP";
     /** Intent action when a remote android is discover. 
 	 * @since 1.0
 	 */
     public static final String ACTION_DISCOVER_ANDROID="org.remoteandroid.DISCOVER";
-    /** Intent action when a remote android is discover. 
+    /** Intent action when a remote android is discover.
 	 * @since 1.0
 	 */
     public static final String ACTION_BIND_REMOTE_ANDROID="org.remoteandroid.service.RemoteAndroidBinder";
@@ -98,14 +106,26 @@ public abstract class RemoteAndroidManager implements Closeable
 	 */
     public static final String EXTRA_ACCEPT_ANONYMOUS="anonymous";
     
+    /** Use current application icon for ACTION_CONNECT_ANDROID. */
+	public static final String	EXTRA_ICON_ID		= "icon.id";
+	/** Use this title for ACTION_CONNECT_ANDROID. */
+	public static final String	EXTRA_TITLE			= "title";
+	/** Use this title for ACTION_CONNECT_ANDROID. */
+	public static final String	EXTRA_SUBTITLE		= "subtitle";
+	/** Use this standard theme for ACTION_CONNECT_ANDROID. */
+	public static final String	EXTRA_THEME_ID		= "theme.id";
+	public static final String	EXTRA_ACTION_BAR_STYLE	= "actionbar";
+    
     /** Extra in intent to get the URL of the remote android. 
 	 * @since 1.0
 	 */
     public static final String EXTRA_DISCOVER="discover";
+    
     /** Extra in intent is device is updated (bonded, undetected, ...)
 	 * @since 1.0
 	 */
     public static final String EXTRA_UPDATE="update";
+
     /** Extra in intent to get the URL of the remote android. 
 	 * @since 1.0
 	 */
