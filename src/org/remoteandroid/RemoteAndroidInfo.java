@@ -55,7 +55,7 @@ public interface RemoteAndroidInfo extends Parcelable
 	/** The remote capability for pairing process. */
 	public long getFeature();
 	/** Is the remote device paired with this device ? */
-	public boolean isBonded();
+	public boolean isBound();
 	/** Is the remote device discovered ? */
 	public boolean isDiscover();
 	/** Is the remote device not bonded and not discovered ? */

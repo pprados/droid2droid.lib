@@ -19,7 +19,10 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.os.Build;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.util.Log;
 import dalvik.system.DexClassLoader;
 
@@ -175,6 +178,16 @@ public abstract class RemoteAndroidManager implements Closeable
      * InputStream in=getContentResolver()
 	 *  .openTypedAssetFileDescriptor(RemoteAndroidManager.QRCODE_URI, "image/png", null)
 	 *  .createInputStream();
+	 *  if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
+	 *  {
+	 *	  in=getContentResolver()
+	 *		 .openTypedAssetFileDescriptor(RemoteAndroidManager.QRCODE_URI, "image/png", null)
+	 *		.createInputStream();
+	 *	}
+	 *	else
+	 *	{
+	 *	  in=getContentResolver().openInputStream(RemoteAndroidManager.QRCODE_URI);
+	 *	}
 	 *  Bitmap bitmap=BitmapFactory.decodeStream(in);
 	 * in.close();
 	 * </pre>
@@ -334,6 +347,9 @@ public abstract class RemoteAndroidManager implements Closeable
 	 * @since 1.0
      */
     public abstract void close();
+    
+    public abstract NdefMessage createNdefMessage();
+    public abstract RemoteAndroidInfo parseNfcRawMessages(Context context,Parcelable[] rawMessage);
 
     /**
      * Bind to a RemoteAndroidManager.
