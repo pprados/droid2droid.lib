@@ -47,7 +47,7 @@ public abstract class RemoteAndroidManager implements Closeable
 	 * Listener to manage the life cycle of remote android manager.
 	 * @since 1.0
 	 */
-	public interface ManagerListener
+	public static interface ManagerListener
 	{
 		/**
 		 * Remote android manager was binded.
