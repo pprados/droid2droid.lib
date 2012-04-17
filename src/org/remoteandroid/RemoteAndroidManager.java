@@ -3,27 +3,18 @@ package org.remoteandroid;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.util.List;
 
 import org.remoteandroid.ListRemoteAndroidInfo.DiscoverListener;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.nfc.NdefMessage;
-import android.os.Build;
-import android.os.Looper;
 import android.os.Parcelable;
-import android.util.Log;
 import dalvik.system.DexClassLoader;
 
 
@@ -109,15 +100,49 @@ public abstract class RemoteAndroidManager implements Closeable
 	 */
     public static final String EXTRA_ACCEPT_ANONYMOUS="anonymous";
     
-    /** Use current application icon for ACTION_CONNECT_ANDROID. */
+    /** 
+     * Flags to connect for {@link ACTION_CONNECT_ANDROID}. May be {@link FLAG_PROPOSE_PAIRING}.
+     */
+    public static final String EXTRA_FLAGS			= "flags";
+    
+    /** 
+     * Use current application icon for {@link ACTION_CONNECT_ANDROID}. 
+     */
 	public static final String	EXTRA_ICON_ID		= "icon.id";
-	/** Use this title for ACTION_CONNECT_ANDROID. */
+	/** 
+	 * Use this title for {@link ACTION_CONNECT_ANDROID}.
+     */
 	public static final String	EXTRA_TITLE			= "title";
-	/** Use this title for ACTION_CONNECT_ANDROID. */
+	/** 
+	 * Use this title for {@link ACTION_CONNECT_ANDROID}.
+     */
 	public static final String	EXTRA_SUBTITLE		= "subtitle";
-	/** Use this standard theme for ACTION_CONNECT_ANDROID. */
+	/** 
+	 * Use this standard theme for {@link ACTION_CONNECT_ANDROID}.
+	 * May be :
+	 * <ul>
+	 * <li>{@link android.R.style.Theme_Black}
+	 * <li>{@link android.R.style.Theme_Holo}
+	 * <li>{@link android.R.style.Theme_DeviceDefault}
+	 * <li>{@link android.R.style.Theme_Black_NoTitleBar}
+	 * <li>{@link android.R.style.Theme_Black_NoTitleBar_Fullscreen}
+	 * <li>{@link android.R.style.Theme_NoTitleBar}
+	 * <li>{@link android.R.style.Theme_NoTitleBar_Fullscreen}
+	 * <li>{@link android.R.style.Theme_NoTitleBar_OverlayActionModes}
+	 * <li>{@link android.R.style.Theme_DeviceDefault_NoActionBar}
+	 * <li>{@link android.R.style.Theme_DeviceDefault_NoActionBar_Fullscreen}
+	 * <li>{@link android.R.style.Theme_Light}
+	 * <li>{@link android.R.style.Theme_Holo_Light}
+	 * <li>{@link android.R.style.Theme_DeviceDefault_Light}
+	 * <li>{@link android.R.style.Theme_Holo_Light_DarkActionBar}
+	 * <li>{@link android.R.style.Theme_DeviceDefault_Light_DarkActionBar}
+	 * <li>{@link android.R.style.Theme_Holo_Light_NoActionBar}
+	 * <li>{@link android.R.style.Theme_DeviceDefault_Light_NoActionBar}
+	 * <li>{@link android.R.style.Theme_DeviceDefault_Light_NoActionBar_Fullscreen}
+	 * <li>{@link android.R.style.Theme_Light_NoTitleBar}
+	 * </ul>
+     */
 	public static final String	EXTRA_THEME_ID		= "theme.id";
-	public static final String	EXTRA_ACTION_BAR_STYLE	= "actionbar";
     
     /** Extra in intent to get the URL of the remote android. 
 	 * @since 1.0
@@ -150,6 +175,11 @@ public abstract class RemoteAndroidManager implements Closeable
     public static final long DISCOVER_INFINITELY=Long.MAX_VALUE;
     public static final long DISCOVER_BEST_EFFORT=Long.MAX_VALUE-1;
 
+    /** Propose pairing during the connection process.
+     * @since 1.0
+     */
+    public static final int FLAG_PROPOSE_PAIRING	=1 << 0;
+
     /** 
      * Flag to accept anonymous connection.
      *  
@@ -161,15 +191,17 @@ public abstract class RemoteAndroidManager implements Closeable
      * 
 	 * @since 1.0
 	 */
-    public static final int FLAG_ACCEPT_ANONYMOUS	=1;
+    public static final int FLAG_ACCEPT_ANONYMOUS	=1 << 1;
+    
     /** Refuse to connect with bluetooth 
 	 * @since 1.0
 	 */
-    public static final int FLAG_NO_BLUETOOTH		=1 << 1;
+    public static final int FLAG_NO_BLUETOOTH		=1 << 2;
+    
     /** Refuse to connect with ethernet 
 	 * @since 1.0
 	 */
-    public static final int FLAG_NO_ETHERNET		=1 << 2;
+    public static final int FLAG_NO_ETHERNET		=1 << 3;
     
 
     /**
@@ -223,8 +255,7 @@ public abstract class RemoteAndroidManager implements Closeable
      * @param conn The {@link ServiceConnection connection manager}. 
      * 	The method {@link ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder) onServiceConnected} 
      *  receive a binder. You must cast it to {@link RemoteAndroid} and use it.
-     * @param flags Flags to connect to remote android. May be {@link FLAG_ACCEPT_ANONYMOUS}, 
-     * {@link FLAG_NO_BLUETOOTH}, {@link FLAG_NO_ETHERNET} or a combination.
+     * @param flags Flags to connect to remote android. May be {@link FLAG_PROPOSE_PAIRING}.
      * @return True if the binding process is started.
      * 
 	 * @since 1.0
@@ -237,7 +268,8 @@ public abstract class RemoteAndroidManager implements Closeable
      * You must have the Remote Android service in the device to use this method.
      * 
      * @param flags Flags to connect to remote android. May be {@link FLAG_ACCEPT_ANONYMOUS}, 
-     * @param timeToDiscover Time in ms to discover devices. May be {@link DISCOVER_INFINITELY}
+     * @param timeToDiscover Time in ms to discover devices. 
+     * * May be {@link DISCOVER_INFINITELY}, {@link DISCOVER_BEST_EFFORT} 
      * {@link FLAG_NO_BLUETOOTH}, {@link FLAG_NO_ETHERNET} or a combination.
      * 
 	 * @since 1.0
@@ -308,9 +340,8 @@ public abstract class RemoteAndroidManager implements Closeable
     	}
     	catch (NameNotFoundException e)
     	{
-	    	Intent intent=new Intent(Intent.ACTION_VIEW,Uri.parse("market://details?id=org.remoteandroid"));
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			return intent;
+	    	return new Intent(Intent.ACTION_VIEW,Uri.parse("market://details?id=org.remoteandroid"))
+	    		.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     	}
     }
     
