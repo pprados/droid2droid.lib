@@ -368,8 +368,13 @@ public abstract class RemoteAndroidManager implements Closeable
      */
     public abstract void close();
     
+    /**
+     * Create NDeF message to expose.
+     * @return NDefMessage with own RemoteAndroidInfo.
+     * 
+     * @sinc 1.0
+     */
     public abstract NdefMessage createNdefMessage();
-    public abstract RemoteAndroidInfo parseNfcRawMessages(Context context,Parcelable[] rawMessage);
 
     /**
      * Bind to a RemoteAndroidManager.
