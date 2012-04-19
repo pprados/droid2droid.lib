@@ -14,6 +14,10 @@ import java.util.List;
  * The discovery process broadcast a specific message to all process in the device. The container catch this kind of message
  * and merge or extend the record before inform the application.
  * 
+ * @see {@link RemoteAndroidManager#startDiscover(int, long)}
+ * @see {@link RemoteAndroidManager#cancelDiscover()}
+ * 
+ * @since 1.0
  * @author Philippe Prados
  *
  */
@@ -61,39 +65,6 @@ public interface ListRemoteAndroidInfo extends List<RemoteAndroidInfo>
 	 */
 	public void setListener(DiscoverListener listener);
 
-	/**
-	 * Start the discovery process for a specific time period.
-	 *  
-	 * @see {@link RemoteAndroidManager#startDiscover(int, int)
-	 * 
-	 * @param timeToDiscover Time in ms to discover devices. May be {@link RemoteAndroidManager#DISCOVER_INFINITELY}
-     * 
-	 * @since 1.0
-	 */
-	public void start(long timeToDiscover);
-	
-	/**
-	 * Start the discovery process for a specific time period.
-	 *  
-	 * @see {@link RemoteAndroidManager#startDiscover(int, int)
-	 * 
-     * @param flags Flags to connect to remote android. May be {@link RemoteAndroidManager#FLAG_ACCEPT_ANONYMOUS}, 
-	 * @param timeToDiscover Time in ms to discover devices. May be {@link RemoteAndroidManager#DISCOVER_INFINITELY}
-     * {@link RemoteAndroidManager#FLAG_NO_BLUETOOTH}, {@link RemoteAndroidManager#FLAG_NO_ETHERNET} or a combination.
-     * 
-	 * @since 1.0
-	 */
-	public void start(int flag,long timeToDiscover);
-	
-	/**
-	 * Cancel the discovery process.
-	 * 
-	 * @See {@link RemoteAndroidManager#cancelDiscover()}
-     * 
-	 * @since 1.0
-	 */
-	public void cancel();
-	
 	/**
 	 * close the liste.
 	 * 

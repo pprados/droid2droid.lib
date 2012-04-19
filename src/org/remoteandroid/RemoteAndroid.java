@@ -22,6 +22,22 @@ import android.os.RemoteException;
  */
 public interface RemoteAndroid
 {
+	/** Flag to force to replace an existing APK (For debug purpose). 
+	 * @see {@link android.content.pm.PackageManager.INSTALL_REPLACE_EXISTING}
+	 * */
+	public static final int INSTALL_REPLACE_EXISTING=0x00000002; // PackageManager.INSTALL_REPLACE_EXISTING
+
+	/** Status if the remote user refuse this APK.
+	 * @see {@link #pushMe(Context, PublishListener, int, long)}
+	 */
+	public static final int ERROR_INSTALL_REFUSED=-1;
+	
+	/** Status if the remote user refuse all remote APK.
+	 * The remote use must set "Unknown source" in "Application" parameters
+	 * @see {@link #pushMe(Context, PublishListener, int, long)}
+	 */
+	public static final int ERROR_INSTALL_REFUSE_FOR_UNKNOW_SOURCE=-2;
+	
 	/**
 	 * Listener of install process.
 	 * 
@@ -62,11 +78,6 @@ public interface RemoteAndroid
 		public void onFinish(int status);
 	}
 	
-	/** Flag to force to replace an existing APK (For debug purpose). 
-	 * @see {@link android.content.pm.PackageManager.INSTALL_REPLACE_EXISTING}
-	 * */
-	public static final int INSTALL_REPLACE_EXISTING=0x00000002; // PackageManager.INSTALL_REPLACE_EXISTING
-
 	/**
 	 * Install my APK in remote android.
 	 * 

@@ -311,17 +311,6 @@ public abstract class RemoteAndroidManager implements Closeable
     public abstract ListRemoteAndroidInfo getBoundedDevices();
     
     /**
-     * Create a List&lt;RemoteAndroidInfo&gt; connected to the discovery process.
-     * @see {@link ListRemoteAndroidInfo}
-     * 
-     * @param callback The callback to use to inform a new device is detected in main thread.
-     * @return An instance of DiscoveredAndroids container.
-     * 
-	 * @since 1.0
-	 */
-    public abstract ListRemoteAndroidInfo newDiscoveredAndroid(DiscoverListener callback);
-    
-    /**
      * Return intent for download Remote Android from the Google Market.
      * <pre>
      * startActivity(remoteAndroidManager.getIntentForMarket());
@@ -392,60 +381,40 @@ public abstract class RemoteAndroidManager implements Closeable
      */
     public static void bindManager(final Context context,final ManagerListener listener)
     {
-		// Use the library present in the Remote Android package.
-		// With this approach, it's possible to update the package and all the caller apk.
-		if (USE_SHAREDLIB) // FIXME: Must be validated with Parcelable objet
-		{
-			// Strict mode
-			final Object lock=new Object();
-			synchronized (lock)
-			{
-				new Thread()
-				{
-					@Override
-					public void run() 
-					{
-						try
-						{
-							sClassLoader=getClassLoaderSingleton(context);
-    		    			synchronized (lock)
-							{
-        						lock.notify();
-							}
-						}
-						catch (Exception e)
-						{
-							throw new Error("Install the Remote Android package",e);
-						}
-					}
-				}.start();
-    			try
-				{
-					lock.wait();
-					RemoteAndroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS)
-							.getMethod(BOOTSTRAP_METHOD, Context.class,RemoteAndroidManager.ManagerListener.class).invoke(null, context,listener);
-					
-				}
-				catch (Exception e)
-				{
-					throw new Error("Install the Remote Android package",e);
-				}
-			}
-		}
-		else
-		{
-			try
-			{
-				RemoteAndroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS)
-						.getMethod("bootStrap", Context.class,RemoteAndroidManager.ManagerListener.class).invoke(null, context,listener);
-			}
-			catch (Exception e)
-			{
-				throw new Error("Internal error",e);
-			}
-		}
+    	bootstrap();
+    	sFactory.newManager(context,listener);
     }
 
+    /**
+     * Create a List&lt;{@link RemoteAndroidInfo}&gt; connected to the discovery process.
+     * @see {@link ListRemoteAndroidInfo}
+     * 
+     * @param context The context.
+     * @param callback The callback to use to inform a new device is detected in main thread. May be null
+     * @return An instance of DiscoveredAndroids container.
+     * 
+	 * @since 1.0
+	 */
+    public static ListRemoteAndroidInfo newDiscoveredAndroid(Context context,DiscoverListener callback)
+    {
+    	bootstrap();
+    	return sFactory.newDiscoveredAndroid(context,callback);
+    }
+    
+    /**
+     * Create a NFC integration helper.
+     * 
+     * @param callback The callback to receive the RemoteAndroidInfo tag.
+     * @return The synchronized container.
+     * 
+     * @Since 1.0
+     */
+    public static RemoteAndroidNfcHelper newNfcIntegrationHelper(RemoteAndroidNfcHelper.OnNfcDiscover callback)
+    {
+    	bootstrap();
+    	return sFactory.newNfcIntegrationHelper(callback);
+    }
+    
     private static ClassLoader getClassLoaderSingleton(final Context context) throws Error
 	{
 		try
@@ -469,10 +438,69 @@ public abstract class RemoteAndroidManager implements Closeable
 		}
 	}
     
+    // ---------------------------
     /** Bootstrap implementation. */
-    private static final String BOOTSTRAP_CLASS="org.remoteandroid.internal.RemoteAndroidManagerImpl";
-    private static final String BOOTSTRAP_METHOD="bootStrap";
+    private static final String BOOTSTRAP_CLASS="org.remoteandroid.internal.FactoriesImpl";
 	/*package*/ static final boolean USE_SHAREDLIB=false;
 	/*package*/static final String SHARED_LIB="sharedlib";
 
+    private static Factories sFactory;
+    
+    private static boolean sBootstraped;
+    private static synchronized void bootstrap()
+    {
+    	if (!sBootstraped)
+    	{
+//		if (USE_SHAREDLIB) // FIXME: Must be validated with Parcelable objet
+//		{
+//			// Strict mode
+//			final Object lock=new Object();
+//			synchronized (lock)
+//			{
+//				new Thread()
+//				{
+//					@Override
+//					public void run() 
+//					{
+//						try
+//						{
+//							sClassLoader=getClassLoaderSingleton(context);
+//    		    			synchronized (lock)
+//							{
+//        						lock.notify();
+//							}
+//						}
+//						catch (Exception e)
+//						{
+//							throw new Error("Install the Remote Android package",e);
+//						}
+//					}
+//				}.start();
+//    			try
+//				{
+//					lock.wait();
+//					RemoteAndroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS)
+//							.getMethod(BOOTSTRAP_METHOD, Context.class,RemoteAndroidManager.ManagerListener.class).invoke(null, context,listener);
+//					
+//				}
+//				catch (Exception e)
+//				{
+//					throw new Error("Install the Remote Android package",e);
+//				}
+//			}
+//		}
+//		else
+			{
+				try
+				{
+					sFactory=(Factories)RemoteAndroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS).newInstance();
+				}
+				catch (Exception e)
+				{
+					throw new Error("Internal error",e);
+				}
+			}
+    	}
+    }
+    
 }
