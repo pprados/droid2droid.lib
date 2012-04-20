@@ -83,7 +83,7 @@ public interface RemoteAndroid
 	 * 
 	 * @param context 			The context
 	 * @param listener 			A listener to expose the evolution of the installation process.
-	 * @param flags 			Accept zero or INSTALL_REPLACE_EXISTING if you want to force the installation.
+	 * @param flags 			Accept zero or {@link INSTALL_REPLACE_EXISTING} if you want to force the installation.
 	 * @param timeout			The timeout in ms for a user answer to a question.
 	 * @throws IOException		It something happens.
 	 * @throws RemoteException	If the connection to remote android is broken.
