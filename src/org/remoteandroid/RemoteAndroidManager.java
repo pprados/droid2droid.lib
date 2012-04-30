@@ -36,6 +36,7 @@ public abstract class RemoteAndroidManager implements Closeable
 {
 	/**
 	 * Listener to manage the life cycle of remote android manager.
+	 * 
 	 * @since 1.0
 	 */
 	public static interface ManagerListener
@@ -43,62 +44,73 @@ public abstract class RemoteAndroidManager implements Closeable
 		/**
 		 * Remote android manager was binded.
 		 * @param manager The manager.
+		 * 
 		 * @since 1.0
 		 */
 		void bind(RemoteAndroidManager manager);
 		/**
 		 * Remote android manager was disconnected.
 		 * @param manager The manager.
+		 * 
 		 * @since 1.0
 		 */
 		void unbind(RemoteAndroidManager manager);
 	}
 	
 	/** The network socket default port. 
+	 * 
 	 * @since 1.0
 	 */
 	public static final int DEFAULT_PORT=19876;
 
 	/** The bootstrap instance. 
+	 * 
 	 * @since 1.0
 	 */
     private static ClassLoader sClassLoader;
 
 
     /** Permission to receive a broadcast discover. 
+     * 
 	 * @since 1.0
 	 */
     public static final String PERMISSION_DISCOVER_SEND="org.remoteandroid.permission.discover.SEND";
     /** Permission to receive a broadcast discover. 
+     * 
 	 * @since 1.0
 	 */
     public static final String PERMISSION_DISCOVER_RECEIVE="org.remoteandroid.permission.discover.RECEIVE";
     /** Intent action when start remote android service. 
+     * 
 	 * @since 1.0
 	 */
     public static final String ACTION_START_REMOTE_ANDROID="org.remoteandroid.START";
     /** Intent action when start remote android service. 
+     * 
 	 * @since 1.0
 	 */
     public static final String ACTION_STOP_REMOTE_ANDROID="org.remoteandroid.STOP";
     /** Intent action when a remote android is discover. 
+     * 
 	 * @since 1.0
 	 */
     public static final String ACTION_DISCOVER_ANDROID="org.remoteandroid.DISCOVER";
     /** Intent action when a remote android is discover.
+     * 
 	 * @since 1.0
 	 */
     public static final String ACTION_BIND_REMOTE_ANDROID="org.remoteandroid.service.RemoteAndroidBinder";
     
     /** Intent action to connect to another remote android.
+     * 
+     * @see {@link #EXTRA_THEME_ID}
+     * @see {@link #EXTRA_ICON_ID}
+     * @see {@link #EXTRA_TITLE}
+     * @see {@link #EXTRA_SUBTITLE}
+     * @see {@link #EXTRA_FLAGS}
      * @since 1.0
      */
     public static final String ACTION_CONNECT_ANDROID="org.remoteandroid.action.Connect";
-    
-    /** Boolean extra for accept anonymous connection when use the startActivityForResult() with ACTION_CONNECT_ANDROID 
-	 * @since 1.0
-	 */
-    public static final String EXTRA_ACCEPT_ANONYMOUS="anonymous";
     
     /** 
      * Flags to connect for {@link ACTION_CONNECT_ANDROID}. May be {@link FLAG_PROPOSE_PAIRING}.
@@ -145,37 +157,59 @@ public abstract class RemoteAndroidManager implements Closeable
 	public static final String	EXTRA_THEME_ID		= "theme.id";
     
     /** Extra in intent to get the URL of the remote android. 
+     * 
+     * @see {@link #ACTION_DISCOVER_ANDROID}
 	 * @since 1.0
 	 */
     public static final String EXTRA_DISCOVER="discover";
     
     /** Extra in intent is device is updated (bonded, undetected, ...)
+     * 
+     * @see {@link #ACTION_DISCOVER_ANDROID}
 	 * @since 1.0
 	 */
     public static final String EXTRA_UPDATE="update";
 
     /** Extra in intent to get the URL of the remote android. 
+     * 
+     * @see {@link #ACTION_DISCOVER_ANDROID}
 	 * @since 1.0
 	 */
 //FIXME    public static final String EXTRA_REMOVE="remove";
     /** Intent action when a remote android is discover. 
+     * 
+     * @see {@link #EXTRA_DISCOVER}
+     * @see {@link #EXTRA_UPDATE}
 	 * @since 1.0
 	 */
     public static final String ACTION_START_DISCOVER_ANDROID="org.remoteandroid.START_DISCOVER";
     /** Intent action when a remote android is discover. 
+     * 
 	 * @since 1.0
 	 */
     public static final String ACTION_STOP_DISCOVER_ANDROID="org.remoteandroid.STOP_DISCOVER";
 
     /** 
      * The delay to discover remote android infinitely.
-     * @see {@link #bindRemoteAndroid(Intent, ServiceConnection, int)}
+     * 
+     * @see {@link #startDiscover(int, long)}
+     * 
 	 * @since 1.0
 	 */
     public static final long DISCOVER_INFINITELY=Long.MAX_VALUE;
+    /** 
+     * The delay to discover remote android during normal delay.
+     * 
+     * @see {@link #startDiscover(int, long)}
+     * 
+	 * @since 1.0
+	 */
     public static final long DISCOVER_BEST_EFFORT=Long.MAX_VALUE-1;
 
     /** Propose pairing during the connection process.
+     * 
+     * @see {@link RemoteAndroidManager#bindRemoteAndroid(Intent, ServiceConnection, int)}
+     * 
      * @since 1.0
      */
     public static final int FLAG_PROPOSE_PAIRING	=1 << 0;
@@ -189,16 +223,22 @@ public abstract class RemoteAndroidManager implements Closeable
      * <p>The IP process, broadcast an UDP to discover remote device in the same sub network.
      * Then, wait to receive the {@link RemoteAndroidInfo}.</p>
      * 
+     * @see {@link #startDiscover(int, long)}
+     * 
 	 * @since 1.0
 	 */
     public static final int FLAG_ACCEPT_ANONYMOUS	=1 << 1;
     
-    /** Refuse to connect with bluetooth 
+    /** Refuse to connect with bluetooth.
+     * @see {@link #startDiscover(int, long)}
+     * 
 	 * @since 1.0
 	 */
     public static final int FLAG_NO_BLUETOOTH		=1 << 2;
     
-    /** Refuse to connect with ethernet 
+    /** Refuse to connect with ethernet.
+     * @see {@link #startDiscover(int, long)}
+     * 
 	 * @since 1.0
 	 */
     public static final int FLAG_NO_ETHERNET		=1 << 3;
@@ -223,11 +263,13 @@ public abstract class RemoteAndroidManager implements Closeable
 	 *  Bitmap bitmap=BitmapFactory.decodeStream(in);
 	 * in.close();
 	 * </pre>
+	 * 
      * @since 1.0
      */
 	public static final Uri QRCODE_URI=Uri.parse("content://org.remoteandroid/qrcode");
     /**
      * Mime type for QRCODE_URI.
+     * 
      * @since 1.0
      */
 	public static final String QRCODE_MIME_TYPE="image/png";
