@@ -104,6 +104,7 @@ public interface RemoteAndroid
 	 */
     public abstract boolean bindService(Intent service, ServiceConnection conn, int flags);
     
+    //TODO: unbind
     /**
      * Close the connection to remote Android.
      */
