@@ -14,7 +14,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.nfc.NdefMessage;
-import android.os.Parcelable;
 import dalvik.system.DexClassLoader;
 
 
@@ -369,7 +368,7 @@ public abstract class RemoteAndroidManager implements Closeable
     		context.getPackageManager().getApplicationInfo("org.remoteandroid",0);
     		return null;
     	}
-    	catch (NameNotFoundException e)
+    	catch (NameNotFoundException e) // $codepro.audit.disable logExceptions
     	{
 	    	return new Intent(Intent.ACTION_VIEW,Uri.parse("market://details?id=org.remoteandroid"))
 	    		.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

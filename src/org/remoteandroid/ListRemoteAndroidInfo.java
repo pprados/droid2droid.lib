@@ -1,6 +1,5 @@
 package org.remoteandroid;
 
-import java.io.Closeable;
 import java.util.List;
 
 /**
