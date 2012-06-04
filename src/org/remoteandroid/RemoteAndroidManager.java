@@ -343,14 +343,14 @@ public abstract class RemoteAndroidManager implements Closeable
     public abstract RemoteAndroidInfo getInfos();
     
     /**
-     * Return the bounded devices
+     * Return the bonded devices
      * 
-     * @return A list with bounded devices. It's possible to register a listener to be informed when the device 
+     * @return A list with bonded devices. It's possible to register a listener to be informed when the device 
      * 			IP address is detected or others updateds informations.
      * 
 	 * @since 1.0
 	 */
-    public abstract ListRemoteAndroidInfo getBoundedDevices();
+    public abstract ListRemoteAndroidInfo getBondedDevices();
     
     /**
      * Return intent for download Remote Android from the Google Market.
