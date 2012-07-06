@@ -1,6 +1,5 @@
 package org.remoteandroid;
 
-import java.net.InetAddress;
 import java.security.PublicKey;
 import java.util.UUID;
 

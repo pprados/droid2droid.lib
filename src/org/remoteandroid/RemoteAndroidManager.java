@@ -7,6 +7,7 @@ import java.io.InputStream;
 
 import org.remoteandroid.ListRemoteAndroidInfo.DiscoverListener;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -14,7 +15,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.nfc.NdefMessage;
-import android.os.Parcelable;
 import dalvik.system.DexClassLoader;
 
 
@@ -32,6 +32,7 @@ import dalvik.system.DexClassLoader;
  * @author Philippe PRADOS
  *
  */
+@TargetApi(9)
 public abstract class RemoteAndroidManager implements Closeable
 {
 	/**
@@ -113,7 +114,8 @@ public abstract class RemoteAndroidManager implements Closeable
     public static final String ACTION_CONNECT_ANDROID="org.remoteandroid.action.Connect";
     
     /** 
-     * Flags to connect for {@link ACTION_CONNECT_ANDROID}. May be {@link FLAG_PROPOSE_PAIRING}.
+     * Flags to connect for {@link ACTION_CONNECT_ANDROID}. 
+     * May be {@link FLAG_PROPOSE_PAIRING}, {@link FLAG_FORCE_PAIRING}
      */
     public static final String EXTRA_FLAGS			= "flags";
     
@@ -214,6 +216,22 @@ public abstract class RemoteAndroidManager implements Closeable
      */
     public static final int FLAG_PROPOSE_PAIRING	=1 << 0;
 
+    /** Pair device even if the remote device accept anonymous.
+     * 
+     * @see {@link RemoteAndroidManager#bindRemoteAndroid(Intent, ServiceConnection, int)}
+     * 
+     * @since 1.0
+     */
+    public static final int FLAG_FORCE_PAIRING	=1 << 1;
+
+    /** Pair device.
+     * 
+     * @see {@link RemoteAndroidManager#bindRemoteAndroid(Intent, ServiceConnection, int)}
+     * 
+     * @since 1.0
+     */
+    public static final int FLAG_REMOVE_PAIRING	=1 << 2;
+
     /** 
      * Flag to accept anonymous connection.
      *  
@@ -227,21 +245,21 @@ public abstract class RemoteAndroidManager implements Closeable
      * 
 	 * @since 1.0
 	 */
-    public static final int FLAG_ACCEPT_ANONYMOUS	=1 << 1;
+    public static final int FLAG_ACCEPT_ANONYMOUS	=1 << 3;
     
     /** Refuse to connect with bluetooth.
      * @see {@link #startDiscover(int, long)}
      * 
 	 * @since 1.0
 	 */
-    public static final int FLAG_NO_BLUETOOTH		=1 << 2;
+    public static final int FLAG_NO_BLUETOOTH		=1 << 4;
     
     /** Refuse to connect with ethernet.
      * @see {@link #startDiscover(int, long)}
      * 
 	 * @since 1.0
 	 */
-    public static final int FLAG_NO_ETHERNET		=1 << 3;
+    public static final int FLAG_NO_ETHERNET		=1 << 5;
     
 
     /**
@@ -297,7 +315,8 @@ public abstract class RemoteAndroidManager implements Closeable
      * @param conn The {@link ServiceConnection connection manager}. 
      * 	The method {@link ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder) onServiceConnected} 
      *  receive a binder. You must cast it to {@link RemoteAndroid} and use it.
-     * @param flags Flags to connect to remote android. May be {@link FLAG_PROPOSE_PAIRING}.
+     * @param flags Flags to connect to remote android. 
+     * May be {@link FLAG_PROPOSE_PAIRING}, {@link FLAG_FORCE_PAIRING}
      * @return True if the binding process is started.
      * 
 	 * @since 1.0
@@ -309,10 +328,11 @@ public abstract class RemoteAndroidManager implements Closeable
      * 
      * You must have the Remote Android service in the device to use this method.
      * 
-     * @param flags Flags to connect to remote android. May be {@link FLAG_ACCEPT_ANONYMOUS}, 
-     * @param timeToDiscover Time in ms to discover devices. 
-     * * May be {@link DISCOVER_INFINITELY}, {@link DISCOVER_BEST_EFFORT} 
+     * @param flags Flags to connect to remote android. 
+     * May be {@link FLAG_ACCEPT_ANONYMOUS}, {@link FLAG_PROPOSE_PAIRING}, {@link FLAG_FORCE_PAIRING}
      * {@link FLAG_NO_BLUETOOTH}, {@link FLAG_NO_ETHERNET} or a combination.
+     * @param timeToDiscover Time in ms to discover devices. 
+     * May be {@link DISCOVER_INFINITELY}, {@link DISCOVER_BEST_EFFORT} 
      * 
 	 * @since 1.0
 	 */
@@ -408,7 +428,8 @@ public abstract class RemoteAndroidManager implements Closeable
      * 
 	 * @since 1.0
      */
-    public abstract void close();
+    @Override
+	public abstract void close();
     
     /**
      * Create NDeF message to expose.
@@ -437,7 +458,8 @@ public abstract class RemoteAndroidManager implements Closeable
      * @see {@link ListRemoteAndroidInfo}
      * 
      * @param context The context.
-     * @param callback The callback to use to inform a new device is detected in main thread. May be null
+     * @param callback The callback to use to inform a new device is detected in main thread. 
+     * May be null
      * @return An instance of DiscoveredAndroids container.
      * 
 	 * @since 1.0
@@ -481,7 +503,7 @@ public abstract class RemoteAndroidManager implements Closeable
 		}
 		catch (Exception e)
 		{
-			throw new Error("Install the Remote Android package",e);
+			throw new Error("Install the RemoteAndroid package",e);
 		}
 	}
     
@@ -519,7 +541,7 @@ public abstract class RemoteAndroidManager implements Closeable
 //						}
 //						catch (Exception e)
 //						{
-//							throw new Error("Install the Remote Android package",e);
+//							throw new Error("Install the RemoteAndroid package",e);
 //						}
 //					}
 //				}.start();

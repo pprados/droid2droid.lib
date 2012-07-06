@@ -1,6 +1,7 @@
 package org.remoteandroid;
 
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -47,6 +48,7 @@ import android.os.Parcelable;
  * @since 1.0
  *
  */
+@TargetApi(9)
 public interface RemoteAndroidNfcHelper 
 {
 	/**
