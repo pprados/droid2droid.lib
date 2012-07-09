@@ -7,6 +7,7 @@ import java.io.InputStream;
 
 import org.remoteandroid.ListRemoteAndroidInfo.DiscoverListener;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -414,8 +415,9 @@ public abstract class RemoteAndroidManager implements Closeable
      * Create NDeF message to expose.
      * @return NDefMessage with own RemoteAndroidInfo.
      * 
-     * @sinc 1.0
+     * @since 1.0
      */
+    @TargetApi(9)
     public abstract NdefMessage createNdefMessage();
 
     /**
