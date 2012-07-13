@@ -104,7 +104,13 @@ public interface RemoteAndroid
 	 */
     public abstract boolean bindService(Intent service, ServiceConnection conn, int flags);
     
-    //TODO: unbind
+    /**
+     *  Unbind a service in remote Android.
+     * 
+     * @see android.content.Context#unbindService(ServiceConnection)
+     */
+    public abstract boolean unbindService(ServiceConnection conn);
+    
     /**
      * Close the connection to remote Android.
      */
