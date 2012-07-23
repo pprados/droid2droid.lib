@@ -435,7 +435,7 @@ public abstract class RemoteAndroidManager implements Closeable
      * Create NDeF message to expose.
      * @return NDefMessage with own RemoteAndroidInfo.
      * 
-     * @sinc 1.0
+     * @since 1.0
      */
     public abstract NdefMessage createNdefMessage();
 
@@ -468,20 +468,6 @@ public abstract class RemoteAndroidManager implements Closeable
     {
     	bootstrap();
     	return sFactory.newDiscoveredAndroid(context,callback);
-    }
-    
-    /**
-     * Create a NFC integration helper.
-     * 
-     * @param callback The callback to receive the RemoteAndroidInfo tag.
-     * @return The synchronized container.
-     * 
-     * @Since 1.0
-     */
-    public static RemoteAndroidNfcHelper newNfcIntegrationHelper(RemoteAndroidNfcHelper.OnNfcDiscover callback)
-    {
-    	bootstrap();
-    	return sFactory.newNfcIntegrationHelper(callback);
     }
     
     private static ClassLoader getClassLoaderSingleton(final Context context) throws Error
