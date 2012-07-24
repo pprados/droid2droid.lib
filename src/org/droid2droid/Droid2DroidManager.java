@@ -1,11 +1,34 @@
-package org.remoteandroid;
+/******************************************************************************
+ *
+ * droid2droid - Distributed Android Framework
+ * ==========================================
+ *
+ * Copyright (C) 2012 by Atos (http://www.http://atos.net)
+ * http://www.droid2droid.org
+ *
+ ******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+******************************************************************************/
+package org.droid2droid;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import org.remoteandroid.ListRemoteAndroidInfo.DiscoverListener;
+import org.droid2droid.ListRemoteAndroidInfo.DiscoverListener;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -33,29 +56,29 @@ import dalvik.system.DexClassLoader;
  *
  */
 @TargetApi(9)
-public abstract class RemoteAndroidManager implements Closeable
+public abstract class Droid2DroidManager implements Closeable
 {
 	/**
-	 * Listener to manage the life cycle of remote android manager.
+	 * Listener to manage the life cycle of Droid2Droid manager.
 	 * 
 	 * @since 1.0
 	 */
 	public static interface ManagerListener
 	{
 		/**
-		 * Remote android manager was binded.
+		 * Droid2Droid manager was binded.
 		 * @param manager The manager.
 		 * 
 		 * @since 1.0
 		 */
-		void bind(RemoteAndroidManager manager);
+		void bind(Droid2DroidManager manager);
 		/**
-		 * Remote android manager was disconnected.
+		 * Droid2Droid manager was disconnected.
 		 * @param manager The manager.
 		 * 
 		 * @since 1.0
 		 */
-		void unbind(RemoteAndroidManager manager);
+		void unbind(Droid2DroidManager manager);
 	}
 	
 	/** The network socket default port. 
@@ -71,38 +94,43 @@ public abstract class RemoteAndroidManager implements Closeable
     private static ClassLoader sClassLoader;
 
 
-    /** Permission to receive a broadcast discover. 
+    /** Permission to send a broadcast discover. 
      * 
 	 * @since 1.0
 	 */
-    public static final String PERMISSION_DISCOVER_SEND="org.remoteandroid.permission.discover.SEND";
-    /** Permission to receive a broadcast discover. 
-     * 
-	 * @since 1.0
-	 */
-    public static final String PERMISSION_DISCOVER_RECEIVE="org.remoteandroid.permission.discover.RECEIVE";
-    /** Intent action when start remote android service. 
-     * 
-	 * @since 1.0
-	 */
-    public static final String ACTION_START_REMOTE_ANDROID="org.remoteandroid.START";
-    /** Intent action when start remote android service. 
-     * 
-	 * @since 1.0
-	 */
-    public static final String ACTION_STOP_REMOTE_ANDROID="org.remoteandroid.STOP";
-    /** Intent action when a remote android is discover. 
-     * 
-	 * @since 1.0
-	 */
-    public static final String ACTION_DISCOVER_ANDROID="org.remoteandroid.DISCOVER";
-    /** Intent action when a remote android is discover.
-     * 
-	 * @since 1.0
-	 */
-    public static final String ACTION_BIND_REMOTE_ANDROID="org.remoteandroid.service.RemoteAndroidBinder";
+    public static final String PERMISSION_DISCOVER_SEND="org.droid2droid.permission.discover.SEND";
     
-    /** Intent action to connect to another remote android.
+    /** Permission to receive a broadcast discover. 
+     * 
+	 * @since 1.0
+	 */
+    public static final String PERMISSION_DISCOVER_RECEIVE="org.droid2droid.permission.discover.RECEIVE";
+    
+    /** Intent action when start Droid2Droid service. 
+     * 
+	 * @since 1.0
+	 */
+    public static final String ACTION_START_REMOTE_ANDROID="org.droid2droid.START";
+    
+    /** Intent action when stop Droid2Droid service. 
+     * 
+	 * @since 1.0
+	 */
+    public static final String ACTION_STOP_REMOTE_ANDROID="org.droid2droid.STOP";
+    
+    /** Intent action when a Droid2Droid is discover. 
+     * 
+	 * @since 1.0
+	 */
+    public static final String ACTION_DISCOVER_ANDROID="org.droid2droid.DISCOVER";
+    
+    /** Intent action to bind a Droid2Droid.
+     * 
+	 * @since 1.0
+	 */
+    public static final String ACTION_BIND_REMOTE_DROID2DROID="org.droid2droid.service.RemoteAndroidBinder";
+    
+    /** Intent action to connect to another Droid2Droid.
      * 
      * @see {@link #EXTRA_THEME_ID}
      * @see {@link #EXTRA_ICON_ID}
@@ -111,7 +139,7 @@ public abstract class RemoteAndroidManager implements Closeable
      * @see {@link #EXTRA_FLAGS}
      * @since 1.0
      */
-    public static final String ACTION_CONNECT_ANDROID="org.remoteandroid.action.Connect";
+    public static final String ACTION_CONNECT_ANDROID="org.droid2droid.action.Connect";
     
     /** 
      * Flags to connect for {@link ACTION_CONNECT_ANDROID}. 
@@ -158,7 +186,7 @@ public abstract class RemoteAndroidManager implements Closeable
      */
 	public static final String	EXTRA_THEME_ID		= "theme.id";
     
-    /** Extra in intent to get the URL of the remote android. 
+    /** Extra in intent to get the URL of the Droid2Droid. 
      * 
      * @see {@link #ACTION_DISCOVER_ANDROID}
 	 * @since 1.0
@@ -172,35 +200,31 @@ public abstract class RemoteAndroidManager implements Closeable
 	 */
     public static final String EXTRA_UPDATE="update";
 
-    /** Extra in intent to get the URL of the remote android. 
-     * 
-     * @see {@link #ACTION_DISCOVER_ANDROID}
-	 * @since 1.0
-	 */
-//FIXME    public static final String EXTRA_REMOVE="remove";
-    /** Intent action when a remote android is discover. 
+    /** Intent action when a Droid2Droid is discover. 
      * 
      * @see {@link #EXTRA_DISCOVER}
      * @see {@link #EXTRA_UPDATE}
 	 * @since 1.0
 	 */
-    public static final String ACTION_START_DISCOVER_ANDROID="org.remoteandroid.START_DISCOVER";
-    /** Intent action when a remote android is discover. 
+    public static final String ACTION_START_DISCOVER_ANDROID="org.droid2droid.START_DISCOVER";
+    
+    /** Intent action when a Droid2Droid is discover. 
      * 
 	 * @since 1.0
 	 */
-    public static final String ACTION_STOP_DISCOVER_ANDROID="org.remoteandroid.STOP_DISCOVER";
+    public static final String ACTION_STOP_DISCOVER_ANDROID="org.droid2droid.STOP_DISCOVER";
 
     /** 
-     * The delay to discover remote android infinitely.
+     * The delay to discover Droid2Droid infinitely.
      * 
      * @see {@link #startDiscover(int, long)}
      * 
 	 * @since 1.0
 	 */
     public static final long DISCOVER_INFINITELY=Long.MAX_VALUE;
+    
     /** 
-     * The delay to discover remote android during normal delay.
+     * The delay to discover Droid2Droid during normal delay.
      * 
      * @see {@link #startDiscover(int, long)}
      * 
@@ -210,7 +234,7 @@ public abstract class RemoteAndroidManager implements Closeable
 
     /** Propose pairing during the connection process.
      * 
-     * @see {@link RemoteAndroidManager#bindRemoteAndroid(Intent, ServiceConnection, int)}
+     * @see {@link Droid2DroidManager#bindRemoteAndroid(Intent, ServiceConnection, int)}
      * 
      * @since 1.0
      */
@@ -218,7 +242,7 @@ public abstract class RemoteAndroidManager implements Closeable
 
     /** Pair device even if the remote device accept anonymous.
      * 
-     * @see {@link RemoteAndroidManager#bindRemoteAndroid(Intent, ServiceConnection, int)}
+     * @see {@link Droid2DroidManager#bindRemoteAndroid(Intent, ServiceConnection, int)}
      * 
      * @since 1.0
      */
@@ -226,7 +250,7 @@ public abstract class RemoteAndroidManager implements Closeable
 
     /** Pair device.
      * 
-     * @see {@link RemoteAndroidManager#bindRemoteAndroid(Intent, ServiceConnection, int)}
+     * @see {@link Droid2DroidManager#bindRemoteAndroid(Intent, ServiceConnection, int)}
      * 
      * @since 1.0
      */
@@ -235,9 +259,6 @@ public abstract class RemoteAndroidManager implements Closeable
     /** 
      * Flag to accept anonymous connection.
      *  
-     * <p>Then, the bluetooth process start to discover all visible bluetooth devices, and try to connection anonymously 
-     * to each one and read the {@link RemoteAndroidInfo}. Else, try to connect only to the pairing devices.</p>
-     * 
      * <p>The IP process, broadcast an UDP to discover remote device in the same sub network.
      * Then, wait to receive the {@link RemoteAndroidInfo}.</p>
      * 
@@ -245,52 +266,57 @@ public abstract class RemoteAndroidManager implements Closeable
      * 
 	 * @since 1.0
 	 */
+    /*
+    * <p>Then, the bluetooth process start to discover all visible bluetooth devices, and try to connection anonymously 
+    * to each one and read the {@link RemoteAndroidInfo}. Else, try to connect only to the pairing devices.</p>
+    */ 
     public static final int FLAG_ACCEPT_ANONYMOUS	=1 << 3;
     
-    /** Refuse to connect with bluetooth.
+    /** Refuse to connect with Bluetooth.
      * @see {@link #startDiscover(int, long)}
      * 
 	 * @since 1.0
 	 */
     public static final int FLAG_NO_BLUETOOTH		=1 << 4;
     
-    /** Refuse to connect with ethernet.
+    /** Refuse to connect with Ethernet.
      * @see {@link #startDiscover(int, long)}
      * 
 	 * @since 1.0
 	 */
     public static final int FLAG_NO_ETHERNET		=1 << 5;
     
-
     /**
      * Uri to create a bitmap with QRcode.
      * <pre>
      * InputStream in=getContentResolver()
-	 *  .openTypedAssetFileDescriptor(RemoteAndroidManager.QRCODE_URI, "image/png", null)
-	 *  .createInputStream();
-	 *  if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
-	 *  {
-	 *	  in=getContentResolver()
+	 *   .openTypedAssetFileDescriptor(RemoteAndroidManager.QRCODE_URI, "image/png", null)
+	 *   .createInputStream();
+	 * if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB)
+	 * {
+	 *   in=getContentResolver()
 	 *		 .openTypedAssetFileDescriptor(RemoteAndroidManager.QRCODE_URI, "image/png", null)
 	 *		.createInputStream();
-	 *	}
-	 *	else
-	 *	{
-	 *	  in=getContentResolver().openInputStream(RemoteAndroidManager.QRCODE_URI);
-	 *	}
-	 *  Bitmap bitmap=BitmapFactory.decodeStream(in);
+	 * }
+	 * else
+	 * {
+	 *   in=getContentResolver().openInputStream(RemoteAndroidManager.QRCODE_URI);
+	 * }
+	 * Bitmap bitmap=BitmapFactory.decodeStream(in);
 	 * in.close();
 	 * </pre>
 	 * 
      * @since 1.0
      */
-	public static final Uri QRCODE_URI=Uri.parse("content://org.remoteandroid/qrcode");
+	public static final Uri QRCODE_URI=Uri.parse("content://org.droid2droid/qrcode");
+	
     /**
      * Mime type for QRCODE_URI.
      * 
      * @since 1.0
      */
 	public static final String QRCODE_MIME_TYPE="image/png";
+	
     /**
      * Return the version of this library.
      * 
@@ -299,6 +325,7 @@ public abstract class RemoteAndroidManager implements Closeable
      * @since 1.0
      */
     public abstract int getVersion();
+    
     /**
      * Return the context.
      * 
@@ -309,14 +336,14 @@ public abstract class RemoteAndroidManager implements Closeable
     public abstract Context getContext();
     
     /**
-     * Bind to a remote android.
+     * Bind to a remote Android&#8482;.
      * 
      * @param service An intent with an URL with all the information to connect to a remote device.
      * @param conn The {@link ServiceConnection connection manager}. 
      * 	The method {@link ServiceConnection#onServiceConnected(android.content.ComponentName, android.os.IBinder) onServiceConnected} 
      *  receive a binder. You must cast it to {@link RemoteAndroid} and use it.
-     * @param flags Flags to connect to remote android. 
-     * May be {@link FLAG_PROPOSE_PAIRING}, {@link FLAG_FORCE_PAIRING}
+     * @param flags Flags to connect to remote Android&#8482;. 
+     * May be {@link FLAG_PROPOSE_PAIRING}, {@link FLAG_FORCE_PAIRING} or a combination.
      * @return True if the binding process is started.
      * 
 	 * @since 1.0
@@ -326,17 +353,16 @@ public abstract class RemoteAndroidManager implements Closeable
     /**
      * Start the discovery process. 
      * 
-     * You must have the Remote Android service in the device to use this method.
+     * You must have the Droid2Droid service in the device to use this method.
      * 
-     * @param flags Flags to connect to remote android. 
+     * @param flags Flags to connect to remote Android&#8482;. 
      * May be {@link FLAG_ACCEPT_ANONYMOUS}, {@link FLAG_PROPOSE_PAIRING}, {@link FLAG_FORCE_PAIRING}
      * {@link FLAG_NO_BLUETOOTH}, {@link FLAG_NO_ETHERNET} or a combination.
-     * @param timeToDiscover Time in ms to discover devices. 
-     * May be {@link DISCOVER_INFINITELY}, {@link DISCOVER_BEST_EFFORT} 
+     * @param timeToDiscover Time in millisecond to discover devices. 
+     * May be {@link DISCOVER_INFINITELY} or {@link DISCOVER_BEST_EFFORT} 
      * 
 	 * @since 1.0
 	 */
-    // TODO: garder l'historique des start, et gérer les deconnexions des apps.
     public abstract void startDiscover(int flags,long timeToDiscover);
     
     /**
@@ -354,9 +380,9 @@ public abstract class RemoteAndroidManager implements Closeable
     public abstract boolean isDiscovering();
     
     /**
-     * Return the local android infos.
+     * Return the local Android&#8482; informations.
      * 
-     * @return The infos.
+     * @return The informations.
      * 
 	 * @since 1.0
 	 */
@@ -365,15 +391,16 @@ public abstract class RemoteAndroidManager implements Closeable
     /**
      * Return the bonded devices
      * 
-     * @return A list with bonded devices. It's possible to register a listener to be informed when the device 
-     * 			IP address is detected or others updateds informations.
+     * @return A list with bonded devices. 
+     * 			It's possible to register a listener to be informed when the device 
+     * 			IP address is detected or others updated informations.
      * 
 	 * @since 1.0
 	 */
     public abstract ListRemoteAndroidInfo getBondedDevices();
     
     /**
-     * Return intent for download Remote Android from the Google Market.
+     * Return intent for download Droid2Droid from the Google Play&#8482;.
      * <pre>
      * startActivity(remoteAndroidManager.getIntentForMarket());
      * </pre>
@@ -386,21 +413,21 @@ public abstract class RemoteAndroidManager implements Closeable
     {
     	try
     	{
-    		context.getPackageManager().getApplicationInfo("org.remoteandroid",0);
+    		context.getPackageManager().getApplicationInfo("org.droid2droid",0);
     		return null;
     	}
     	catch (NameNotFoundException e)
     	{
-	    	return new Intent(Intent.ACTION_VIEW,Uri.parse("market://details?id=org.remoteandroid"))
+	    	return new Intent(Intent.ACTION_VIEW,Uri.parse("market://details?id=org.droid2droid"))
 	    		.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     	}
     }
     
     /**
-     * Set Log for local and RemoteAndroid.apk.
+     * Set Log for local and Droid2Droid.apk.
      * 
      * @param type Bit mask FLAG_LOG_ERROR, FLAG_LOG_WARN, FLAG_LOG_INFO, FLAG_LOG_DEBUG, FLAG_LOG_VERBOSE or FLAG_LOG_ALL.
-     * @param state true or false
+     * @param state <code>true</code> or <code>false</code>
      */
     @Deprecated
     public abstract void setLog(int type,boolean state);
@@ -459,7 +486,7 @@ public abstract class RemoteAndroidManager implements Closeable
      * 
      * @param context The context.
      * @param callback The callback to use to inform a new device is detected in main thread. 
-     * May be null
+     * May be <code>null</code>.
      * @return An instance of DiscoveredAndroids container.
      * 
 	 * @since 1.0
@@ -470,13 +497,14 @@ public abstract class RemoteAndroidManager implements Closeable
     	return sFactory.newDiscoveredAndroid(context,callback);
     }
     
+    // Hack to manage shared library with Android
     private static ClassLoader getClassLoaderSingleton(final Context context) throws Error
 	{
 		try
 		{
-    		ClassLoader classLoader=RemoteAndroidManager.class.getClassLoader();
+    		ClassLoader classLoader=Droid2DroidManager.class.getClassLoader();
 			File dir=context.getApplicationContext().getDir("dexopt", Context.MODE_PRIVATE); 
-			final String packageName="org.remoteandroid";
+			final String packageName="org.droid2droid";
 			PackageInfo info=context.getPackageManager().getPackageInfo(packageName, 0/*PackageManager.GET_CONFIGURATIONS*/);
 			String jar=info.applicationInfo.dataDir+"/files/"+SHARED_LIB+".jar";
 			InputStream in=new FileInputStream(jar); in.read(); in.close(); // Check if is readable
@@ -495,9 +523,9 @@ public abstract class RemoteAndroidManager implements Closeable
     
     // ---------------------------
     /** Bootstrap implementation. */
-    private static final String BOOTSTRAP_CLASS="org.remoteandroid.internal.FactoriesImpl";
-	/*package*/ static final boolean USE_SHAREDLIB=false;
-	/*package*/static final String SHARED_LIB="sharedlib";
+    private static final String BOOTSTRAP_CLASS="org.droid2droid.internal.FactoriesImpl";
+	/*package*/ static final boolean USE_SHAREDLIB=false; // true if use shared library.
+	/*package*/static final String SHARED_LIB="sharedlib"; // Library name.
 
     private static Factories sFactory;
     
@@ -548,7 +576,7 @@ public abstract class RemoteAndroidManager implements Closeable
 			{
 				try
 				{
-					sFactory=(Factories)RemoteAndroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS).newInstance();
+					sFactory=(Factories)Droid2DroidManager.class.getClassLoader().loadClass(BOOTSTRAP_CLASS).newInstance();
 				}
 				catch (Exception e)
 				{
