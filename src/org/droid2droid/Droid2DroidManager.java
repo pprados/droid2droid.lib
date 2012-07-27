@@ -464,6 +464,7 @@ public abstract class Droid2DroidManager implements Closeable
      * 
      * @since 1.0
      */
+    @TargetApi(9)
     public abstract NdefMessage createNdefMessage();
 
     /**
