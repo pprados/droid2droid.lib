@@ -75,7 +75,7 @@ public interface RemoteAndroidInfo extends Parcelable
 	/** If the remote device have network.  
 	 * @since 1.0
 	 */
-	public static final long FEATURE_NET				=1<<9;
+	public static final long FEATURE_NET				=1<<9; // FIXME: ethernet ?
 	/** If location. 
 	 * @since 1.0
 	 */
@@ -83,7 +83,7 @@ public interface RemoteAndroidInfo extends Parcelable
 	/** If Bluetooth. 
 	 * @since 1.0
 	 */
-	public static final long FEATURE_BLUETOOTH		=1<<11;
+	public static final long FEATURE_BLUETOOTH		=1<<11; // FIXME: Remote
 	/** If accelerometer. 
 	 * @since 1.0
 	 */
@@ -102,7 +102,7 @@ public interface RemoteAndroidInfo extends Parcelable
 	 * @since 1.0
 	 */
 	public PublicKey getPublicKey();
-	/** The remote android version.  
+	/** The droid2droid version.  
 	 * @since 1.0
 	 */
 	public int getVersion();

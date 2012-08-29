@@ -42,7 +42,7 @@ import dalvik.system.DexClassLoader;
 
 
 /**
- * The startup class to use Remote android.
+ * The startup class to use Droid2Droid.
  * This is an asynchronous framework.
  * This class manage all remotes devices.
  * The classical usage is:
@@ -128,7 +128,7 @@ public abstract class Droid2DroidManager implements Closeable
      * 
 	 * @since 1.0
 	 */
-    public static final String ACTION_BIND_REMOTE_DROID2DROID="org.droid2droid.service.RemoteAndroidBinder";
+    public static final String ACTION_BIND_REMOTE_ANDROID="org.droid2droid.service.RemoteAndroidBinder";
     
     /** Intent action to connect to another Droid2Droid.
      * 
